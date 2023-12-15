@@ -49,7 +49,7 @@ Response Body (Success):
 {
     "data" : {
       "token" : "TOKEN",
-      "expiredAt" : 164681687646 //  miliseconds
+      "expiredAt" : 164681687646 
     }
 }
 ```
@@ -101,8 +101,8 @@ Request Body :
 
 ```json 
 {
-    "name" : "Rifqy Imam Ramadhan", //  put if only want to update name
-    "password" : "rifqy0112" //  put if only want to update password
+    "name" : "Rifqy Imam Ramadhan", 
+    "password" : "rifqy0112"
 }
 ```
 
