@@ -3,11 +3,9 @@ package com.farhan.bsfnet.controller;
 
 import com.farhan.bsfnet.entity.User;
 import com.farhan.bsfnet.model.LoginUserRequest;
-import com.farhan.bsfnet.model.RegisterUserRequest;
 import com.farhan.bsfnet.model.TokenResponse;
 import com.farhan.bsfnet.model.WebResponse;
 import com.farhan.bsfnet.service.AuthService;
-import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;

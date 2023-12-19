@@ -1,13 +1,12 @@
 package com.farhan.bsfnet.controller;
 
 
-import com.farhan.bsfnet.entity.Employee;
 import com.farhan.bsfnet.entity.User;
 import com.farhan.bsfnet.model.*;
+import com.farhan.bsfnet.service.Impl.UserServiceImpl;
 import com.farhan.bsfnet.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.http.MediaTypeEditor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
