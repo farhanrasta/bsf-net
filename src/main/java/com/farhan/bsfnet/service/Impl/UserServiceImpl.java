@@ -1,4 +1,4 @@
-package com.farhan.bsfnet.service;
+package com.farhan.bsfnet.service.Impl;
 
 
 import com.farhan.bsfnet.entity.User;
@@ -7,6 +7,8 @@ import com.farhan.bsfnet.model.UpdateUserRequest;
 import com.farhan.bsfnet.model.UserResponse;
 import com.farhan.bsfnet.repository.UserRepository;
 import com.farhan.bsfnet.security.BCrypt;
+import com.farhan.bsfnet.service.UserService;
+import com.farhan.bsfnet.service.ValidationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,7 +22,7 @@ import java.util.Objects;
 
 @Service
 @Slf4j
-public class UserService {
+public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepository userRepository;

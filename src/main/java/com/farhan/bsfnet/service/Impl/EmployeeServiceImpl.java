@@ -1,4 +1,4 @@
-package com.farhan.bsfnet.service;
+package com.farhan.bsfnet.service.Impl;
 
 
 import com.farhan.bsfnet.entity.Employee;
@@ -8,6 +8,7 @@ import com.farhan.bsfnet.model.EmployeeResponse;
 import com.farhan.bsfnet.model.SearchEmployeeRequest;
 import com.farhan.bsfnet.model.UpdateEmployeeRequest;
 import com.farhan.bsfnet.repository.EmployeeRepository;
+import com.farhan.bsfnet.service.EmployeeService;
 import jakarta.persistence.criteria.Predicate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,24 +25,26 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 
 @Service
 @Slf4j
-public class EmployeeService {
+public class EmployeeServiceImpl implements EmployeeService {
 
     @Autowired
     private EmployeeRepository employeeRepository;
 
     @Autowired
-    private ValidationService validationService;
+    private ValidationServiceImpl validationService;
 
     @Transactional
     public EmployeeResponse create(User user, CreateEmployeeRequest request) {
         validationService.validate(request);
 
+        if (employeeRepository.existsById(request.getEmail())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "email already registered");
+        }
+
         Employee employee = new Employee();
-        employee.setId(UUID.randomUUID().toString());
         employee.setName(request.getName());
         employee.setEmail(request.getEmail());
         employee.setSalary(request.getSalary());
@@ -56,7 +59,7 @@ public class EmployeeService {
 
     private EmployeeResponse toEmployeeResponse(Employee employee) {
         return EmployeeResponse.builder()
-                .id(employee.getId())
+                .id(employee.getId().toString())
                 .name(employee.getName())
                 .email(employee.getEmail())
                 .salary(employee.getSalary())
@@ -120,7 +123,7 @@ public class EmployeeService {
         return new PageImpl<>(contactResponses, pageable, contacts.getTotalElements());
     }
 
-    public void delete(User user, String employeeId ) {
+    public void delete(User user, String employeeId) {
         Employee employee = employeeRepository.findFirstByUserAndId(user, employeeId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not Found"));
 

@@ -1,4 +1,4 @@
-package com.farhan.bsfnet.service;
+package com.farhan.bsfnet.service.Impl;
 
 
 import com.farhan.bsfnet.entity.User;
@@ -6,9 +6,10 @@ import com.farhan.bsfnet.model.LoginUserRequest;
 import com.farhan.bsfnet.model.TokenResponse;
 import com.farhan.bsfnet.repository.UserRepository;
 import com.farhan.bsfnet.security.BCrypt;
+import com.farhan.bsfnet.service.AuthService;
+import com.farhan.bsfnet.service.ValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -16,7 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.UUID;
 
 @Service
-public class AuthService {
+public class AuthServiceImpl implements AuthService {
 
     @Autowired
     private UserRepository userRepository;

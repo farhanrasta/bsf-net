@@ -4,6 +4,7 @@ package com.farhan.bsfnet.controller;
 import com.farhan.bsfnet.entity.User;
 import com.farhan.bsfnet.model.*;
 import com.farhan.bsfnet.service.EmployeeService;
+import com.farhan.bsfnet.service.Impl.EmployeeServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
@@ -62,7 +63,7 @@ public class EmployeeController {
     }
 
     @GetMapping(
-            path = "/api/employees",
+            path = "/employees",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public WebResponse<List<EmployeeResponse>> search(User user,

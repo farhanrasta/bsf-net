@@ -1,5 +1,6 @@
-package com.farhan.bsfnet.service;
+package com.farhan.bsfnet.service.Impl;
 
+import com.farhan.bsfnet.service.ValidationService;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.Set;
 
 @Service
-public class ValidationService {
+public class ValidationServiceImpl implements ValidationService {
 
     @Autowired
     private Validator validator;
