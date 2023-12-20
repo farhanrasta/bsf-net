@@ -9,12 +9,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "users")
+@Table(name = "users1")
 public class User {
 
     @Id
@@ -27,7 +29,7 @@ public class User {
     private String token;
 
     @Column(name = "token_expired_at")
-    private Long tokenExpiredAt;
+    private LocalDateTime tokenExpiredAt;
 
 
 
