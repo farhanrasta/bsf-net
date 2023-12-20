@@ -18,6 +18,9 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
+import java.util.Calendar;
+
 @Component
 @Slf4j
 public class UserArgumentResolver implements HandlerMethodArgumentResolver {
@@ -42,8 +45,10 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
         User user = userRepository.findFirstByToken(token)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized"));
 
+        LocalDateTime dateTime1 = LocalDateTime.now();
+
         log.info("USER {}", user);
-        if (user.getTokenExpiredAt() < System.currentTimeMillis()) {
+        if (user.getTokenExpiredAt().compareTo(dateTime1) < 0) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         }
 

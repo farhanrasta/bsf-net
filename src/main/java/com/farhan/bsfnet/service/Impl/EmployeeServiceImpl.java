@@ -40,8 +40,16 @@ public class EmployeeServiceImpl implements EmployeeService {
     public EmployeeResponse create(User user, CreateEmployeeRequest request) {
         validationService.validate(request);
 
-        if (employeeRepository.existsById(request.getEmail())) {
+        if (employeeRepository.existsByEmail(request.getEmail())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "email already registered");
+        }
+
+        if (!request.getEmail().contains("@bankbsf.co.id")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "email is not valid");
+        }
+
+        if (!request.getStatus().equals("good") && !request.getStatus().equals("bad") && !request.getStatus().equals("average")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "status is not valid");
         }
 
         Employee employee = new Employee();
@@ -82,6 +90,18 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         Employee employee = employeeRepository.findFirstByUserAndId(user, request.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not Found"));
+
+        if (employeeRepository.existsByEmail(request.getEmail())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "email already registered");
+        }
+
+        if (!request.getEmail().contains("@bankbsf.co.id")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "email is not valid");
+        }
+
+        if (!request.getStatus().equals("good") || !request.getStatus().equals("bad") || !request.getStatus().equals("average")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "status is not valid");
+        }
 
         employee.setName(request.getName());
         employee.setEmail(request.getEmail());
