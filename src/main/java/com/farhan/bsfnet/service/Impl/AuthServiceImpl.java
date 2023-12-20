@@ -9,11 +9,15 @@ import com.farhan.bsfnet.security.BCrypt;
 import com.farhan.bsfnet.service.AuthService;
 import com.farhan.bsfnet.service.ValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.util.Calendar;
 import java.util.UUID;
 
 @Service
@@ -29,12 +33,14 @@ public class AuthServiceImpl implements AuthService {
     public TokenResponse login(LoginUserRequest request) {
         validationService.validate(request);
 
+        LocalDateTime dateTime2 = LocalDateTime.now().plusHours(1);
+
         User user = userRepository.findById(request.getUsername())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "invalid username of password"));
 
         if(BCrypt.checkpw(request.getPassword(), user.getPassword())) {
             user.setToken(UUID.randomUUID().toString());
-            user.setTokenExpiredAt(oneHour());
+            user.setTokenExpiredAt(dateTime2);
             userRepository.save(user);
 
             return TokenResponse.builder().
@@ -44,11 +50,6 @@ public class AuthServiceImpl implements AuthService {
         } else {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "invalid username of password");
         }
-    }
-
-    private Long oneHour() {
-
-        return System.currentTimeMillis() + (1000 * 60 * 1);
     }
 
     public void logout(User user) {
