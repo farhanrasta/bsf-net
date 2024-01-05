@@ -5,6 +5,8 @@ import com.farhan.bsfnet.entity.User;
 import com.farhan.bsfnet.model.*;
 import com.farhan.bsfnet.service.EmployeeService;
 import com.farhan.bsfnet.service.Impl.EmployeeServiceImpl;
+import com.farhan.bsfnet.service.JwtService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
@@ -19,14 +21,19 @@ public class EmployeeController {
     @Autowired
     private EmployeeService employeeService;
 
+    @Autowired
+    private JwtService jwtService;
+
     @PostMapping(
             path = "/employees",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
 
-    public WebResponse<EmployeeResponse> create(User user, @RequestBody CreateEmployeeRequest request) {
-        EmployeeResponse employeeResponse = employeeService.create(user, request);
+    public WebResponse<EmployeeResponse> create(@RequestBody CreateEmployeeRequest request,
+                                                HttpServletRequest httpServletRequest) {
+        JwtResponse jwtResponse = jwtService.filter(httpServletRequest);
+        EmployeeResponse employeeResponse = employeeService.create(request, jwtResponse);
         return WebResponse.<EmployeeResponse>builder().data(employeeResponse).build();
     }
 
@@ -34,8 +41,10 @@ public class EmployeeController {
             path = "/employees/{employeeId}",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public WebResponse<EmployeeResponse> get(User user, @PathVariable("employeeId") String employeeId) {
-        EmployeeResponse employeeResponse = employeeService.get(user, employeeId);
+    public WebResponse<EmployeeResponse> get(HttpServletRequest httpServletRequest,
+                                             @PathVariable("employeeId") String employeeId) {
+        JwtResponse jwtResponse = jwtService.filter(httpServletRequest);
+        EmployeeResponse employeeResponse = employeeService.get(jwtResponse, employeeId);
         return WebResponse.<EmployeeResponse>builder().data(employeeResponse).build();
     }
 
@@ -44,12 +53,12 @@ public class EmployeeController {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public WebResponse<EmployeeResponse> update(User user,
+    public WebResponse<EmployeeResponse> update(HttpServletRequest httpServletRequest,
                                                 @RequestBody UpdateEmployeeRequest request,
                                                 @PathVariable("employeeId") String employeeId) {
         request.setId(employeeId);
-
-        EmployeeResponse employeeResponse = employeeService.update(user, request);
+        JwtResponse jwtResponse = jwtService.filter(httpServletRequest);
+        EmployeeResponse employeeResponse = employeeService.update(jwtResponse, request);
         return WebResponse.<EmployeeResponse>builder().data(employeeResponse).build();
     }
 
@@ -57,8 +66,10 @@ public class EmployeeController {
             path = "/employees/{employeeId}",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public WebResponse<String> delete(User user, @PathVariable("employeeId") String employeeId) {
-        employeeService.delete(user, employeeId);
+    public WebResponse<String> delete(HttpServletRequest httpServletRequest,
+                                      @PathVariable("employeeId") String employeeId) {
+        JwtResponse jwtResponse = jwtService.filter(httpServletRequest);
+        employeeService.delete(jwtResponse, employeeId);
         return WebResponse.<String>builder().data("Ok").build();
     }
 
@@ -66,7 +77,8 @@ public class EmployeeController {
             path = "/employees",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public WebResponse<List<EmployeeResponse>> search(User user,
+    public WebResponse<List<EmployeeResponse>> search(HttpServletRequest httpServletRequest,
+                                                      User user,
                                                       @RequestParam(value = "name", required = false) String name,
                                                       @RequestParam(value = "email", required = false) String email,
                                                       @RequestParam(value = "salary", required = false) String salary,
@@ -82,7 +94,8 @@ public class EmployeeController {
                 .status(status)
                 .build();
 
-        Page<EmployeeResponse> contactResponses = employeeService.search(user, request);
+        JwtResponse jwtResponse = jwtService.filter(httpServletRequest);
+        Page<EmployeeResponse> contactResponses = employeeService.search(jwtResponse, user, request);
         return WebResponse.<List<EmployeeResponse>>builder()
                 .data(contactResponses.getContent())
                 .paging(PagingResponse.builder()

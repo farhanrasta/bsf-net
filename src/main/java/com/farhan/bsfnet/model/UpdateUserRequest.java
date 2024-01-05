@@ -15,7 +15,13 @@ import lombok.NoArgsConstructor;
 public class UpdateUserRequest {
 
     @Size(max = 100)
-    private String name;
+    private String firstname;
+
+    @Size(max = 100)
+    private String lastname;
+
+    @Size(max = 100)
+    private String username;
 
     @Size(max = 100)
     private String password;

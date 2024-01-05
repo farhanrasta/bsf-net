@@ -3,10 +3,7 @@ package com.farhan.bsfnet.service.Impl;
 
 import com.farhan.bsfnet.entity.Employee;
 import com.farhan.bsfnet.entity.User;
-import com.farhan.bsfnet.model.CreateEmployeeRequest;
-import com.farhan.bsfnet.model.EmployeeResponse;
-import com.farhan.bsfnet.model.SearchEmployeeRequest;
-import com.farhan.bsfnet.model.UpdateEmployeeRequest;
+import com.farhan.bsfnet.model.*;
 import com.farhan.bsfnet.repository.EmployeeRepository;
 import com.farhan.bsfnet.service.EmployeeService;
 import jakarta.persistence.criteria.Predicate;
@@ -36,8 +33,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Autowired
     private ValidationServiceImpl validationService;
 
-    @Transactional
-    public EmployeeResponse create(User user, CreateEmployeeRequest request) {
+    @Override
+    public EmployeeResponse create(CreateEmployeeRequest request, JwtResponse jwtResponse) {
         validationService.validate(request);
 
         if (employeeRepository.existsByEmail(request.getEmail())) {
@@ -57,7 +54,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setEmail(request.getEmail());
         employee.setSalary(request.getSalary());
         employee.setStatus(request.getStatus());
-        employee.setUser(user);
+        employee.setUsername(jwtResponse.getUsername());
 
         employeeRepository.save(employee);
 
@@ -72,23 +69,24 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .email(employee.getEmail())
                 .salary(employee.getSalary())
                 .status(employee.getStatus())
+                .username(employee.getUsername())
                 .build();
     }
 
-    @Transactional(readOnly = true)
-    public EmployeeResponse get(User user, String id) {
-        Employee employee = employeeRepository.findFirstByUserAndId(user, id)
+    @Override
+    public EmployeeResponse get(JwtResponse jwtResponse, String id) {
+        Employee employee = employeeRepository.findFirstByUsernameAndId(jwtResponse.getUsername(), id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee is not found"));
 
         return toEmployeeResponse(employee);
 
     }
 
-    @Transactional
-    public EmployeeResponse update(User user, UpdateEmployeeRequest request) {
+    @Override
+    public EmployeeResponse update(JwtResponse jwtResponse, UpdateEmployeeRequest request) {
         validationService.validate(request);
 
-        Employee employee = employeeRepository.findFirstByUserAndId(user, request.getId())
+        Employee employee = employeeRepository.findFirstByUsernameAndId(jwtResponse.getUsername(), request.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not Found"));
 
         if (employeeRepository.existsByEmail(request.getEmail())) {
@@ -99,7 +97,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "email is not valid");
         }
 
-        if (!request.getStatus().equals("good") || !request.getStatus().equals("bad") || !request.getStatus().equals("average")) {
+        if (!request.getStatus().equals("good") && !request.getStatus().equals("bad") && !request.getStatus().equals("average")) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "status is not valid");
         }
 
@@ -114,7 +112,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Transactional(readOnly = true)
-    public Page<EmployeeResponse> search(User user, SearchEmployeeRequest request) {
+    public Page<EmployeeResponse> search(JwtResponse jwtResponse, User user, SearchEmployeeRequest request) {
         Specification<Employee> specification = (root, query, builder) -> {
             List<Predicate> predicates = new ArrayList<>();
             predicates.add(builder.equal(root.get("user"), user));
@@ -143,8 +141,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         return new PageImpl<>(contactResponses, pageable, contacts.getTotalElements());
     }
 
-    public void delete(User user, String employeeId) {
-        Employee employee = employeeRepository.findFirstByUserAndId(user, employeeId)
+    public void delete(JwtResponse jwtResponse, String employeeId) {
+        Employee employee = employeeRepository.findFirstByUsernameAndId(jwtResponse.getUsername(), employeeId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not Found"));
 
         employeeRepository.delete(employee);

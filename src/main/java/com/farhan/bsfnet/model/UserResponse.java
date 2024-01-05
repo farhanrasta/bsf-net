@@ -12,7 +12,18 @@ import lombok.NoArgsConstructor;
 @Builder
 public class UserResponse {
 
+    private Long id;
+
+    private String firstname;
+
+    private String lastname;
+
     private String username;
 
-    private String name;
+    private Boolean isUserToken;
+
+    private String token;
+
+    private String expiredDate;
+
 }

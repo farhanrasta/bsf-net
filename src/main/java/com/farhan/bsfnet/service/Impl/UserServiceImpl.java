@@ -2,6 +2,7 @@ package com.farhan.bsfnet.service.Impl;
 
 
 import com.farhan.bsfnet.entity.User;
+import com.farhan.bsfnet.model.JwtResponse;
 import com.farhan.bsfnet.model.RegisterUserRequest;
 import com.farhan.bsfnet.model.UpdateUserRequest;
 import com.farhan.bsfnet.model.UserResponse;
@@ -34,34 +35,57 @@ public class UserServiceImpl implements UserService {
     public void register(RegisterUserRequest request){
         validationService.validate(request);
 
-        if (userRepository.existsById(request.getUsername())) {
+        if (userRepository.existsByUsername(request.getUsername())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "username already registered");
         }
 
         User user = new User();
+        user.setFirstname(request.getFirstname());
+        user.setLastname(request.getLastname());
         user.setUsername(request.getUsername());
         user.setPassword(BCrypt.hashpw(request.getPassword(), BCrypt.gensalt()));
-        user.setName(request.getName());
+        user.setIsUserToken(true);
 
         userRepository.save(user);
 
     }
 
-    public UserResponse get(User user) {
+    @Override
+    public UserResponse profile(JwtResponse jwtResponse) {
+
+        User user = userRepository.findFirstById(jwtResponse.getId().toString())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee is not found"));
+
         return UserResponse.builder()
+                .id(user.getId())
+                .firstname(user.getFirstname())
+                .lastname(user.getLastname())
                 .username(user.getUsername())
-                .name(user.getName())
+                .isUserToken(user.getIsUserToken())
+                .token(jwtResponse.getToken())
+                .expiredDate(jwtResponse.getExpiredDate())
                 .build();
     }
 
     @Transactional
-    public UserResponse update(User user, UpdateUserRequest request){
+    public UserResponse update(UpdateUserRequest request, JwtResponse jwtResponse){
         validationService.validate(request);
 
         log.info("REQUEST : {}", request);
 
-        if (Objects.nonNull(request.getName())) {
-            user.setName(request.getName());
+        User user = userRepository.findFirstById(jwtResponse.getId().toString())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee is not found"));
+
+        if (Objects.nonNull(request.getFirstname())) {
+            user.setFirstname(request.getFirstname());
+        }
+
+        if (Objects.nonNull(request.getLastname())) {
+            user.setLastname(request.getLastname());
+        }
+
+        if (Objects.nonNull(request.getUsername())) {
+            user.setUsername(request.getUsername());
         }
 
         if (Objects.nonNull(request.getPassword())) {
@@ -70,11 +94,14 @@ public class UserServiceImpl implements UserService {
 
         userRepository.save(user);
 
-        log.info("USER : {}", user.getName());
+        log.info("USER : {}", user.getUsername());
 
         return UserResponse.builder()
-                .name(user.getName())
+                .id(user.getId())
+                .firstname(user.getFirstname())
+                .lastname(user.getLastname())
                 .username(user.getUsername())
+                .isUserToken(user.getIsUserToken())
                 .build();
 
     }

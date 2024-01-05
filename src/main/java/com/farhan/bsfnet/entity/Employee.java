@@ -6,22 +6,22 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails;
+
 
 import java.io.Serializable;
 import java.util.List;
 
 @Entity
+@Table(name = "bsf_employees")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "employess")
 public class Employee implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
+    private Long id;
 
     private String name;
 
@@ -31,9 +31,11 @@ public class Employee implements Serializable {
 
     private String status;
 
-    @ManyToOne
-    @JoinColumn(name = "username", referencedColumnName = "username")
-    private User user;
+//    @ManyToOne
+//    @JoinColumn(name = "username", referencedColumnName = "username")
+//    private User user;
+
+    private String username;
 
 
 }

@@ -62,7 +62,7 @@ Response Body (Failed, 401):
 }
 ```
 
-## Get User
+## Profile User
 
 Endpoint : GET /api/users/current
 
@@ -74,10 +74,15 @@ Response Body (Success):
 
 ```json
 {
-    "data" : {
-      "username" : "farhanindrasta",
-      "name" : "Farhan Dani Indrasta"
-    }
+  "data": {
+    "id": 1,
+    "firstname": "Farhan",
+    "lastname": "Indrasta",
+    "username": "farhanindrasta",
+    "isUserToken": true,
+    "token": "null",
+    "expiredDate": "null"
+  }
 }
 ```
 
@@ -127,7 +132,7 @@ Response Body (Failed, 401):
 
 ## Logout User
 
-Endpoint : DELETE /api/auth/logout
+Endpoint : GET /api/auth/logout
 
 Request Header :
 

@@ -14,7 +14,9 @@ import java.time.LocalDateTime;
 @Builder
 public class TokenResponse {
 
+    private String username;
+
     private String token;
 
-    private LocalDateTime expiredAt;
+    private String expiredAt;
 }

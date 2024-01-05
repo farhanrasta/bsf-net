@@ -22,4 +22,6 @@ public class EmployeeResponse {
 
     private String status;
 
+    private String username;
+
 }

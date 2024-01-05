@@ -45,10 +45,10 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
         User user = userRepository.findFirstByToken(token)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized"));
 
-        LocalDateTime dateTime1 = LocalDateTime.now();
+        Calendar calnow = Calendar.getInstance();
 
         log.info("USER {}", user);
-        if (user.getTokenExpiredAt().compareTo(dateTime1) < 0) {
+        if (user.getExpiredDate().equals(calnow.toString())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         }
 
